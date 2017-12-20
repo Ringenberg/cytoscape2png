@@ -1,0 +1,33 @@
+{
+  "name": "cytoscape2png",
+  "version": "1.0.0",
+  "description": "Command line tool for converting a Cytograph json file to a png image.",
+  "main": "index.js",
+  "bin": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ringenberg/cytoscape2png.git"
+  },
+  "keywords": [
+    "cytoscape",
+    "png"
+  ],
+  "author": {
+    "name": "Michael Ringenberg",
+    "email": "Ringenberg@users.noreply.github.com",
+    "url": "https://ringenberg.github.io/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ringenberg/cytoscape2png/issues"
+  },
+  "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
+  "dependencies": {
+    "commander": "^2.12.2",
+    "cytosnap": "^2.0.1",
+    "trim-image": "^1.0.3"
+  }
+}
