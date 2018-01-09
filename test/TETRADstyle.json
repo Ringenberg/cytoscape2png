@@ -1,0 +1,59 @@
+{
+  "style": [
+    {
+      "selector": "node",
+      "style": {
+        "background-color": "lightblue",
+        "label": "data(id)",
+        "shape": "roundrectangle",
+        "text-valign": "center",
+        "border-width": "1px",
+        "border-style": "solid",
+        "border-color": "grey"
+      }
+    },
+    {
+      "selector": "node.LargeLabel",
+      "style": {
+        "width": "label",
+        "height": "label",
+        "padding": 5
+      }
+    },
+    {
+       "selector": "node.intervention",
+       "style": {
+          "background-opacity": "0",
+          "shape": "diamond",
+          "border-width": "0px"
+       }
+    },
+    {
+      "selector": "edge",
+      "style": {
+        "arrow-scale": 2,
+        "width": 3,
+        "line-color": "blue",
+        "target-arrow-shape": "triangle",
+        "target-arrow-color": "blue",
+        "curve-style": "bezier"
+      }
+    },
+    {
+       "selector": "edge.intervention",
+       "style": {
+          "arrow-scale": 1,
+          "width": 2,
+          "line-color": "black",
+          "target-arrow-color": "black"
+       }
+    },
+    {
+      "selector": "edge.undirected",
+      "style": {
+        "source-arrow-shape": "none",
+        "target-arrow-shape": "none"
+      }
+    }
+  ]
+}
