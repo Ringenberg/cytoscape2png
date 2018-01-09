@@ -113,7 +113,13 @@ function make_graph_image(graph_pathname) {
       });
     }).then(function() {
       console.log('Trimming image:', image_pathname);
-      trimImage(image_pathname, image_pathname);
+      return new Promise(
+	(resolve,reject) =>
+	  trimImage(image_pathname, image_pathname, {}, err => {
+	    //console.log(err);	
+	    if (err) return reject(err);
+	    return resolve();
+	  }));
     }).then(function() { return snap.stop(); })
     .catch(function(err) { console.log(err); snap.stop(); });
 }
@@ -121,3 +127,5 @@ function make_graph_image(graph_pathname) {
 // Run the conversion on all the images as promises.
 Promise.all(program.args.map(make_graph_image))
   .catch(function(err) { console.error(err); });
+
+module.exports = make_graph_image;

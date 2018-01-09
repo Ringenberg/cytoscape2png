@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -29,5 +29,9 @@
     "commander": "^2.12.2",
     "cytosnap": "^2.0.1",
     "trim-image": "^1.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^4.1.0",
+    "mocha-image-compare": "^1.0.3"
   }
 }
