@@ -2,7 +2,6 @@
 /**
  * @fileoverview Convert a Cytograph json file to a png image.
  * @author Ringenberg@users.noreply.github.com
- * @version 1.0.0
  */
 
 const fs = require('fs');

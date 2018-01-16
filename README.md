@@ -27,3 +27,11 @@ $ cytoscape2png --style graph_style.json graph*.json
 ```
 will generate all of the given graphs using the provided JSON style file
 as specified in http://js.cytoscape.org/#style - Plain JSON format.
+
+## Options
+    -V, --version        output the version number
+    -s, --style [value]  A json file containing the Cytoscape style data to use for the images. (default: )
+    -w, --width <n>      Sets the initial viewport width. (default: 500)
+    -h, --height <n>     Sets the initial viewport height. (default: 500)
+    -T, --no-trim        Do not trim image (default: true)
+    -h, --help           output usage information
