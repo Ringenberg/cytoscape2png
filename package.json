@@ -5,7 +5,8 @@
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "jshint index.js"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,11 @@
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
+    "jshint": "^2.9.5",
     "mocha": "^4.1.0",
     "mocha-image-compare": "^1.0.3"
+  },
+  "jshintConfig": {
+    "esversion": 6
   }
 }

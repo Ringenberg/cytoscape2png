@@ -11,16 +11,20 @@ const path = require('path');
 const cytosnap = require('cytosnap');
 const program = require('commander');
 const trimImage = require('trim-image');
+const pkg = require('./package.json');
 
 // Process command line parameters.
 program
-  .version('1.0.0')
+  .version(pkg.version)
   .option('-s, --style [value]',
           'A json file containing the Cytoscape style data to use for the images.',
           '')
+  .option('-w, --width <n>', 'Sets the initial viewport width.', n=>parseInt(n), 500)
+  .option('-h, --height <n>', 'Sets the initial viewport height.', n=>parseInt(n), 500)
+  .option('-T, --no-trim', 'Do not trim image')
   .parse(process.argv);
 
-//console.log(program.args);
+//console.log(program.args,parseInt(program.width),program.height);
 
 /**
  * Read in a json file and parse it.
@@ -37,7 +41,7 @@ function load_json_file(json_pathname) {
       console.log('Reading:',json_pathname);
       fs.readFile(json_pathname,
                   function(err, data) {
-                    if(err) return reject(err)
+                    if(err) return reject(err);
                     return resolve(data);
                   });
     } else {
@@ -62,8 +66,8 @@ function make_graph(graph_pathname) {
         {},
         {
           format: 'png',
-          width: 500,
-          height: 500,
+          width: program.width,
+          height: program.height,
           zoom: 1,
           background: 'transparent',
           resolvesTo: 'stream'
@@ -112,14 +116,16 @@ function make_graph_image(graph_pathname) {
         out.on('finish',resolve).on('error',reject);
       });
     }).then(function() {
-      console.log('Trimming image:', image_pathname);
-      return new Promise(
-	(resolve,reject) =>
-	  trimImage(image_pathname, image_pathname, {}, err => {
-	    //console.log(err);	
-	    if (err) return reject(err);
-	    return resolve();
-	  }));
+      if (program.trim) {
+	console.log('Trimming image:', image_pathname);
+	return new Promise(
+	  (resolve,reject) =>
+	    trimImage(image_pathname, image_pathname, {}, err => {
+	      //console.log(err);	
+	      if (err) return reject(err);
+	      return resolve();
+	    }));
+      }
     }).then(function() { return snap.stop(); })
     .catch(function(err) { console.log(err); snap.stop(); });
 }
