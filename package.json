@@ -27,13 +27,13 @@
   },
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
-    "commander": "^2.15.0",
+    "commander": "^2.15.1",
     "cytosnap": "^2.0.1",
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
     "jshint": "^2.9.5",
-    "mocha": "^5.0.4",
+    "mocha": "^5.0.5",
     "mocha-image-compare": "^1.0.3"
   },
   "jshintConfig": {
