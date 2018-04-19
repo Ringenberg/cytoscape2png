@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "jshint": "^2.9.5",
-    "mocha": "^5.0.5",
+    "mocha": "^5.1.1",
     "mocha-image-compare": "^1.0.3"
   },
   "jshintConfig": {
