@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
-    "commander": "^2.15.1",
+    "commander": "^2.16.0",
     "cytosnap": "^2.0.1",
     "trim-image": "^1.0.3"
   },
