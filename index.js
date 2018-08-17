@@ -5,7 +5,7 @@
  */
 
 const fs = require('fs');
-const spawn = require('child_process').spawn;
+//const spawn = require('child_process').spawn;
 const path = require('path');
 const cytosnap = require('cytosnap');
 const program = require('commander');
@@ -116,14 +116,14 @@ function make_graph_image(graph_pathname) {
       });
     }).then(function() {
       if (program.trim) {
-	console.log('Trimming image:', image_pathname);
-	return new Promise(
-	  (resolve,reject) =>
-	    trimImage(image_pathname, image_pathname, {}, err => {
-	      //console.log(err);	
-	      if (err) return reject(err);
-	      return resolve();
-	    }));
+        console.log('Trimming image:', image_pathname);
+        return new Promise(
+          (resolve,reject) =>
+            trimImage(image_pathname, image_pathname, {}, err => {
+              //console.log(err);
+              if (err) return reject(err);
+              return resolve();
+            }));
       }
     }).then(function() { return snap.stop(); })
     .catch(function(err) { console.log(err); snap.stop(); });
