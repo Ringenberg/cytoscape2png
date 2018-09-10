@@ -61,3 +61,6 @@ typings/
 *~
 .settings/
 .project
+
+# Test report
+report/
