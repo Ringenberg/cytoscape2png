@@ -32,7 +32,7 @@
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
-    "eslint": "^5.5.0",
+    "eslint": "^5.6.1",
     "mocha": "^5.2.0",
     "mocha-image-compare": "^1.0.3"
   }
