@@ -7,8 +7,9 @@
 const fs = require('fs');
 //const spawn = require('child_process').spawn;
 const path = require('path');
-const cytosnap = require('cytosnap');
+//const cytosnap = require('cytosnap');
 const program = require('commander');
+const puppeteer = require('puppeteer');
 const trimImage = require('trim-image');
 const pkg = require('./package.json');
 
@@ -76,6 +77,41 @@ function make_graph(graph_pathname) {
     });
 }
 
+async function gen_graph(graph_pathname) {
+  const browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: { width: program.width, height: program.height }
+  });
+  const page = await browser.newPage();
+  await page.setContent(`<html><body><div id="graph"></div></body></html>`);
+  await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
+  await page.addScriptTag({path: path.resolve(__dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
+  //let graph_sj = await graph_style;
+  let graph_json = await load_json_file(graph_pathname);
+  //let obj = JSON.stringify(Object.assign(
+  //  {},
+  //  {'layout': { name: 'preset', 'fit': false, 'zoom': 1}},
+  //  graph_sj, graph_json));
+  await page.addScriptTag({content: `var cy = cytoscape({
+container: document.getElementById('graph'),
+elements: ${JSON.stringify(graph_json.elements)},
+layout: ${JSON.stringify(graph_json.layout)},
+style: ${JSON.stringify(graph_json.style)}});`});
+
+  const image_pathname = make_image_pathname(graph_pathname);
+  await page.screenshot({path: image_pathname, fullPage: true, omitBackground: true});
+  await browser.close();
+  if (program.trim) {
+    return new Promise(
+      (resolve,reject) =>
+        trimImage(image_pathname, image_pathname, {}, err => {
+          //console.log(err);
+          if (err) return reject(err);
+          return resolve();
+        }));
+  }
+}
+
 /**
  * Given the graph pathname, generate the corresponding image name.
  * The image name will be the same as the graph pathname,
@@ -130,7 +166,7 @@ function make_graph_image(graph_pathname) {
 }
 
 // Run the conversion on all the images as promises.
-Promise.all(program.args.map(make_graph_image))
+Promise.all(program.args.map(gen_graph))
   .catch(function(err) { console.error(err); });
 
-module.exports = make_graph_image;
+module.exports = gen_graph;
