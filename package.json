@@ -33,6 +33,7 @@
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
+    "acorn": "^6.0.4",
     "eslint": "^5.8.0",
     "mocha": "^5.2.0",
     "mocha-image-compare": "^1.0.3"

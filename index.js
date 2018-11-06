@@ -5,9 +5,7 @@
  */
 
 const fs = require('fs');
-//const spawn = require('child_process').spawn;
 const path = require('path');
-//const cytosnap = require('cytosnap');
 const program = require('commander');
 const puppeteer = require('puppeteer');
 const trimImage = require('trim-image');
@@ -53,66 +51,6 @@ function load_json_file(json_pathname) {
 var graph_style = load_json_file(program.style);
 
 /**
- * Generate the graph object by combining the specified json file, the style
- * json file, a layout (should be moved to files), and some items needed by
- * cytosnap.
- * @param {String} the pathname of the json file of the graph.
- * @returns {Promise.<Object, Error>}
- */
-function make_graph(graph_pathname) {
-  return Promise.all([graph_style, load_json_file(graph_pathname)])
-    .then(function (args) {
-      return Object.assign(
-        {},
-        {
-          format: 'png',
-          width: program.width,
-          height: program.height,
-          zoom: 1,
-          background: 'transparent',
-          resolvesTo: 'stream'
-        },
-        {'layout': {name: 'preset', 'fit': false, 'zoom': 1}},
-        args[0], args[1]);
-    });
-}
-
-async function gen_graph(graph_pathname) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: { width: program.width, height: program.height }
-  });
-  const page = await browser.newPage();
-  await page.setContent(`<html><body><div id="graph"></div></body></html>`);
-  await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
-  await page.addScriptTag({path: path.resolve(__dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
-  //let graph_sj = await graph_style;
-  let graph_json = await load_json_file(graph_pathname);
-  //let obj = JSON.stringify(Object.assign(
-  //  {},
-  //  {'layout': { name: 'preset', 'fit': false, 'zoom': 1}},
-  //  graph_sj, graph_json));
-  await page.addScriptTag({content: `var cy = cytoscape({
-container: document.getElementById('graph'),
-elements: ${JSON.stringify(graph_json.elements)},
-layout: ${JSON.stringify(graph_json.layout)},
-style: ${JSON.stringify(graph_json.style)}});`});
-
-  const image_pathname = make_image_pathname(graph_pathname);
-  await page.screenshot({path: image_pathname, fullPage: true, omitBackground: true});
-  await browser.close();
-  if (program.trim) {
-    return new Promise(
-      (resolve,reject) =>
-        trimImage(image_pathname, image_pathname, {}, err => {
-          //console.log(err);
-          if (err) return reject(err);
-          return resolve();
-        }));
-  }
-}
-
-/**
  * Given the graph pathname, generate the corresponding image name.
  * The image name will be the same as the graph pathname,
  * just with a .png extension.
@@ -127,42 +65,42 @@ function make_image_pathname(graph_pathname) {
 }
 
 /**
- * Generate the image from the given graph json file.
- * @param {String} the pathname of a cytoscape json graph file.
- * @returns {Promise}
+ * Generate the graph image given the path to the json graph representation.
+ * @param {String} the pathname of the graph json file.
  */
-function make_graph_image(graph_pathname) {
-  // load graph
-  //console.log('source:', graph_pathname);
-  var image_pathname = make_image_pathname(graph_pathname);
-  const snap = cytosnap();
+async function gen_graph(graph_pathname) {
+  const browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: {width: program.width+8, height: program.height+8}
+  });
+  const page = await browser.newPage();
+  await page.setContent('<html><body><div id="graph"></div></body></html>');
+  await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
+  await page.addScriptTag({path: path.resolve(__dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
+  //let graph_style_json = await graph_style;
+  const graph_json = await load_json_file(graph_pathname);
+  //let obj = JSON.stringify(Object.assign(
+  //  {},
+  //  {'layout': { name: 'preset', 'fit': false, 'zoom': 1}},
+  //  graph_sj, graph_json));
+  await page.addScriptTag({content: `var cy = cytoscape({
+container: document.getElementById('graph'),
+elements: ${JSON.stringify(graph_json.elements)},
+layout: ${JSON.stringify(graph_json.layout)},
+style: ${JSON.stringify(graph_json.style)}});`});
 
-  // Start snap and generate the graph object
-  return Promise.all([snap.start(), make_graph(graph_pathname)])
-    .then(function (args) {
-      // Generate the image.
-      return snap.shot(args[1]);
-    }).then(function(img) {
-      // Write out image to file.
-      return new Promise(function(resolve, reject) {
-        console.log('Writing image:', image_pathname);
-        var out = fs.createWriteStream(image_pathname);
-        img.pipe(out);
-        out.on('finish',resolve).on('error',reject);
-      });
-    }).then(function() {
-      if (program.trim) {
-        console.log('Trimming image:', image_pathname);
-        return new Promise(
-          (resolve,reject) =>
-            trimImage(image_pathname, image_pathname, {}, err => {
-              //console.log(err);
-              if (err) return reject(err);
-              return resolve();
-            }));
-      }
-    }).then(function() { return snap.stop(); })
-    .catch(function(err) { console.log(err); snap.stop(); });
+  const image_pathname = make_image_pathname(graph_pathname);
+  await page.screenshot({path: image_pathname, fullPage: true, omitBackground: true});
+  if (program.trim) {
+    await new Promise(
+      (resolve,reject) =>
+        trimImage(image_pathname, image_pathname, {}, err => {
+          //console.log(err);
+          if (err) return reject(err);
+          return resolve();
+        }));
+  }
+  return browser.close();
 }
 
 // Run the conversion on all the images as promises.

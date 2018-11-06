@@ -9,11 +9,10 @@ describe('cytoscape2png', function() {
     if (fs.existsSync('test/Graph1.png')) {
       fs.unlinkSync('test/Graph1.png')
     }
-    var cpg = await cytopng('test/Graph1.json');
-    cpg;
+    await cytopng('test/Graph1.json');
     return
   });
-  it('Graph1', /*async*/ function(done) {
+  it('Graph1', function(done) {
     let compare = mic.test(this);
     compare('test/Graph1.png', 0.001, 'test/Graph1-result.png', done);
   });
