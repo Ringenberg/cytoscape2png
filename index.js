@@ -64,47 +64,56 @@ function make_image_pathname(graph_pathname) {
   return path.format(image_path);
 }
 
+/*eslint max-statements: ["error", 11, { "ignoreTopLevelFunctions": true }]*/
 /**
  * Generate the graph image given the path to the json graph representation.
  * @param {String} the pathname of the graph json file.
  */
-async function gen_graph(graph_pathname) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: {width: program.width+8, height: program.height+8}
-  });
+async function gen_graph(browser, trim, graph_pathname) {
   const page = await browser.newPage();
   await page.setContent('<html><body><div id="graph"></div></body></html>');
   await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
-  await page.addScriptTag({path: path.resolve(__dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
-  //let graph_style_json = await graph_style;
-  const graph_json = await load_json_file(graph_pathname);
-  //let obj = JSON.stringify(Object.assign(
-  //  {},
-  //  {'layout': { name: 'preset', 'fit': false, 'zoom': 1}},
-  //  graph_sj, graph_json));
+  await page.addScriptTag({path: path.resolve(
+    __dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
+  const cy_graph = Object.assign(
+    {},
+    {'layout': {name: 'preset', 'fit': false, 'zoom': 1}},
+    await graph_style, await load_json_file(graph_pathname));
   await page.addScriptTag({content: `var cy = cytoscape({
 container: document.getElementById('graph'),
-elements: ${JSON.stringify(graph_json.elements)},
-layout: ${JSON.stringify(graph_json.layout)},
-style: ${JSON.stringify(graph_json.style)}});`});
+elements: ${JSON.stringify(cy_graph.elements)},
+layout: ${JSON.stringify(cy_graph.layout)},
+style: ${JSON.stringify(cy_graph.style)}});`});
 
   const image_pathname = make_image_pathname(graph_pathname);
-  await page.screenshot({path: image_pathname, fullPage: true, omitBackground: true});
-  if (program.trim) {
+  console.log(`Writing ${image_pathname}...`);
+  await page.screenshot({path: image_pathname, fullPage: true,
+                         omitBackground: true});
+  if (trim) {
     await new Promise(
       (resolve,reject) =>
-        trimImage(image_pathname, image_pathname, {}, err => {
-          //console.log(err);
-          if (err) return reject(err);
-          return resolve();
-        }));
+        trimImage(image_pathname, image_pathname, {},
+                  err => { if (err) return reject(err); return resolve(); }));
   }
+}
+
+/**
+ * Generate the images from a list of Cytoscape json files.
+ * @param {[String]} pathnames of Cytoscape json files.
+ */
+async function gen_images(graph_files) {
+  // create browser that is a bit bigger than the the desired image.
+  const browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: {width: program.width + 8, height: program.height + 8}
+  });
+
+  // Run the conversion on all the images as promises.
+  await Promise.all(graph_files.map(g_file => gen_graph(browser,program.trim,g_file)))
+    .catch(err => { console.error(err); });
   return browser.close();
 }
 
-// Run the conversion on all the images as promises.
-Promise.all(program.args.map(gen_graph))
-  .catch(function(err) { console.error(err); });
+gen_images(program.args);
 
-module.exports = gen_graph;
+module.exports = gen_images;

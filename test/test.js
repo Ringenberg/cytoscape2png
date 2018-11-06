@@ -9,7 +9,7 @@ describe('cytoscape2png', function() {
     if (fs.existsSync('test/Graph1.png')) {
       fs.unlinkSync('test/Graph1.png')
     }
-    await cytopng('test/Graph1.json');
+    await cytopng(['test/Graph1.json']);
     return
   });
   it('Graph1', function(done) {
