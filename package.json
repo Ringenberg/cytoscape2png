@@ -1,11 +1,11 @@
 {
   "name": "cytoscape2png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Command line tool for converting a Cytograph json file to a png image.",
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "ava",
     "lint": "eslint index.js"
   },
   "repository": {
@@ -28,14 +28,13 @@
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
     "commander": "^2.20.0",
-    "cytoscape": "^3.5.2",
+    "cytoscape": "^3.5.3",
     "puppeteer": "^1.14.0",
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
-    "acorn": "^6.1.1",
+    "ava": "^1.4.1",
     "eslint": "^5.16.0",
-    "mocha": "^5.2.0",
-    "mocha-image-compare": "^1.0.3"
+    "looks-same": "^7.2.0"
   }
 }

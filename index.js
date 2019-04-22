@@ -25,6 +25,19 @@ program
 //console.log(program.args,parseInt(program.width),program.height);
 
 /**
+ * Tests if the given string is not empty.
+ * @param {String} a string
+ * @returns {Boolean}
+ */
+function q_empty_pathname(pathname) {
+  // needed because params get messed up in ava testing environment
+  return !(pathname &&
+           (typeof pathname === 'string' || pathname instanceof String) &&
+           pathname !== '' &&
+           pathname !== 'undefined');
+}
+
+/**
  * Read in a json file and parse it.
  * @param {String} a pathname indicating the json file.
  *       It must have a .json extension.
@@ -32,19 +45,19 @@ program
  */
 function load_json_file(json_pathname) {
   return new Promise(function(resolve, reject) {
-    if (json_pathname) {
-      if (path.extname(json_pathname) !== '.json') {
-        return reject(new Error(json_pathname + ' is not a json file'));
-      }
-      console.log('Reading:',json_pathname);
-      fs.readFile(json_pathname,
-                  function(err, data) {
-                    if(err) return reject(err);
-                    return resolve(data);
-                  });
-    } else {
+    // needs some better checks for testing to work correctly
+    if (q_empty_pathname(json_pathname)) {
       return resolve('{}');
     }
+    if (path.extname(json_pathname) !== '.json') {
+      return reject(new Error(json_pathname + ' is not a json file'));
+    }
+    console.log('Reading:', json_pathname);
+    fs.readFile(json_pathname,
+                function(err, data) {
+                  if(err) return reject(err);
+                  return resolve(data);
+                });
   }).then((data) => JSON.parse(data)).catch(console.error);
 }
 
@@ -64,36 +77,38 @@ function make_image_pathname(graph_pathname) {
   return path.format(image_path);
 }
 
-/*eslint max-statements: ["error", 11, { "ignoreTopLevelFunctions": true }]*/
+/*eslint max-statements: ["error", 12, { "ignoreTopLevelFunctions": true }]*/
 /**
  * Generate the graph image given the path to the json graph representation.
  * @param {String} the pathname of the graph json file.
  */
 async function gen_graph(browser, trim, graph_pathname) {
-  const page = await browser.newPage();
-  await page.setContent('<html><body><div id="graph"></div></body></html>');
-  await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
-  await page.addScriptTag({path: path.resolve(
-    __dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
-  const cy_graph = Object.assign(
-    {},
-    {'layout': {name: 'preset', 'fit': false, 'zoom': 1}},
-    await graph_style, await load_json_file(graph_pathname));
-  await page.addScriptTag({content: `var cy = cytoscape({
+  if (!q_empty_pathname(graph_pathname)) {
+    const page = await browser.newPage();
+    await page.setContent('<html><body><div id="graph"></div></body></html>');
+    await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
+    await page.addScriptTag({path: path.resolve(
+      __dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
+    const cy_graph = Object.assign(
+      {},
+      {'layout': {name: 'preset', 'fit': false, 'zoom': 1}},
+      await graph_style, await load_json_file(graph_pathname));
+    await page.addScriptTag({content: `var cy = cytoscape({
 container: document.getElementById('graph'),
 elements: ${JSON.stringify(cy_graph.elements)},
 layout: ${JSON.stringify(cy_graph.layout)},
 style: ${JSON.stringify(cy_graph.style)}});`});
 
-  const image_pathname = make_image_pathname(graph_pathname);
-  console.log(`Writing ${image_pathname}...`);
-  await page.screenshot({path: image_pathname, fullPage: true,
-                         omitBackground: true});
-  if (trim) {
-    await new Promise(
-      (resolve,reject) =>
-        trimImage(image_pathname, image_pathname, {},
-                  err => { if (err) return reject(err); return resolve(); }));
+    const image_pathname = make_image_pathname(graph_pathname);
+    console.log(`Writing ${image_pathname}...`);
+    await page.screenshot({path: image_pathname, fullPage: true,
+                           omitBackground: true});
+    if (trim) {
+      await new Promise(
+        (resolve,reject) =>
+          trimImage(image_pathname, image_pathname, {},
+                    err => { if (err) return reject(err); return resolve(); }));
+    }
   }
 }
 

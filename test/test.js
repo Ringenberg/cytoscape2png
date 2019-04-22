@@ -1,19 +1,20 @@
-const mic = require('mocha-image-compare')({});
-const assert = require('assert');
+import fs from 'fs';
+import test from 'ava';
 const cytopng = require('../index.js');
-const fs = require('fs');
+import looksSame from 'looks-same';
 
-describe('cytoscape2png', function() {
-  this.timeout(0);
-  before('Generate Graph1.png', async function() {
-    if (fs.existsSync('test/Graph1.png')) {
-      fs.unlinkSync('test/Graph1.png')
-    }
-    await cytopng(['test/Graph1.json']);
-    return
-  });
-  it('Graph1', function(done) {
-    let compare = mic.test(this);
-    compare('test/Graph1.png', 0.001, 'test/Graph1-result.png', done);
-  });
+test.before('Generate Graph1', async t => {
+  if (fs.existsSync('test/Graph1.png')) {
+    fs.unlinkSync('test/Graph1.png')
+  }
+  await cytopng(['test/Graph1.json']);
+});
+test.after('Cleanup product', t => {
+  if (fs.existsSync('test/Graph1.png')) {
+    fs.unlinkSync('test/Graph1.png')
+  }
+});
+
+test.cb('cytoscape2png', t => {
+  looksSame('test/Graph1.png', 'test/Graph1-result.png', t.end);
 });
