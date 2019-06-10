@@ -28,7 +28,7 @@
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
     "commander": "^2.20.0",
-    "cytoscape": "^3.6.2",
+    "cytoscape": "^3.7.0",
     "puppeteer": "^1.17.0",
     "trim-image": "^1.0.3"
   },
