@@ -29,12 +29,12 @@
   "dependencies": {
     "commander": "^3.0.1",
     "cytoscape": "^3.10.0",
-    "puppeteer": "^1.19.0",
+    "puppeteer": "^1.20.0",
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
-    "ava": "^2.3.0",
-    "eslint": "^6.3.0",
+    "ava": "^2.4.0",
+    "eslint": "^6.4.0",
     "looks-same": "^7.2.1",
     "tap-xunit": "^2.4.1"
   }
