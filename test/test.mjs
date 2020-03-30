@@ -1,6 +1,6 @@
 import fs from 'fs';
 import test from 'ava';
-const cytopng = require('../index.js');
+import cytopng from '../index.js';
 import looksSame from 'looks-same';
 
 test.before('Generate Graph1', async t => {
