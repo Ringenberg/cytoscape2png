@@ -27,14 +27,14 @@
   },
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
-    "commander": "^6.2.0",
-    "cytoscape": "^3.17.0",
+    "commander": "^7.0.0",
+    "cytoscape": "^3.18.0",
     "puppeteer": "^5.5.0",
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
-    "ava": "^3.14.0",
-    "eslint": "^7.15.0",
+    "ava": "^3.15.0",
+    "eslint": "^7.19.0",
     "looks-same": "^7.2.4",
     "tap-xunit": "^2.4.1"
   }

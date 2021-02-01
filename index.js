@@ -6,12 +6,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const program = require('commander');
+const { Command } = require('commander');
 const puppeteer = require('puppeteer');
 const trimImage = require('trim-image');
 const pkg = require('./package.json');
 
 // Process command line parameters.
+const program = new Command();
 program
   .version(pkg.version)
   .option('-s, --style [value]',
@@ -21,6 +22,7 @@ program
   .option('-h, --height <n>', 'Sets the initial viewport height.', n=>parseInt(n), 500)
   .option('-T, --no-trim', 'Do not trim image')
   .parse(process.argv);
+const options = program.opts();
 
 //console.log(program.args,parseInt(program.width),program.height);
 
@@ -61,7 +63,7 @@ function load_json_file(json_pathname) {
   }).then((data) => JSON.parse(data)).catch(console.error);
 }
 
-var graph_style = load_json_file(program.style);
+var graph_style = load_json_file(options.style);
 
 /**
  * Given the graph pathname, generate the corresponding image name.
@@ -86,7 +88,7 @@ async function gen_graph(browser, trim, graph_pathname) {
   if (!q_empty_pathname(graph_pathname)) {
     const page = await browser.newPage();
     await page.setContent('<html><body><div id="graph"></div></body></html>');
-    await page.addStyleTag({content: `#graph { width: ${program.width}; height: ${program.height}; box-sizing: border-box; }`});
+    await page.addStyleTag({content: `#graph { width: ${options.width}; height: ${options.height}; box-sizing: border-box; }`});
     await page.addScriptTag({path: path.resolve(
       __dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
     const cy_graph = Object.assign(
@@ -120,11 +122,12 @@ async function gen_images(graph_files) {
   // create browser that is a bit bigger than the the desired image.
   const browser = await puppeteer.launch({
     headless: true,
-    defaultViewport: {width: program.width + 8, height: program.height + 8}
+    defaultViewport: {width: options.width + 8, height: options.height + 8}
   });
 
   // Run the conversion on all the images as promises.
-  await Promise.all(graph_files.map(g_file => gen_graph(browser,program.trim,g_file)))
+  await Promise.all(graph_files.map(g_file =>
+				    gen_graph(browser, options.trim, g_file)))
     .catch(err => { console.error(err); });
   return browser.close();
 }
