@@ -1,9 +1,11 @@
 {
   "name": "cytoscape2png",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Command line tool for converting a Cytograph json file to a png image.",
   "main": "index.js",
-  "bin": "./index.js",
+  "bin": {
+    "cytoscape2png": "index.js"
+  },
   "scripts": {
     "test": "ava",
     "lint": "eslint index.js"
