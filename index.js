@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { Command } = require('commander');
+const {Command} = require('commander');
 const puppeteer = require('puppeteer');
 const trimImage = require('trim-image');
 const pkg = require('./package.json');
@@ -15,11 +15,23 @@ const pkg = require('./package.json');
 const program = new Command();
 program
   .version(pkg.version)
-  .option('-s, --style [value]',
-          'A json file containing the Cytoscape style data to use for the images.',
-          '')
-  .option('-w, --width <n>', 'Sets the initial viewport width.', n=>parseInt(n), 500)
-  .option('-h, --height <n>', 'Sets the initial viewport height.', n=>parseInt(n), 500)
+  .option(
+    '-s, --style [value]',
+    'A json file containing the Cytoscape style data to use for the images.',
+    ''
+  )
+  .option(
+    '-w, --width <n>',
+    'Sets the initial viewport width.',
+    (n) => parseInt(n),
+    500
+  )
+  .option(
+    '-h, --height <n>',
+    'Sets the initial viewport height.',
+    (n) => parseInt(n),
+    500
+  )
   .option('-T, --no-trim', 'Do not trim image')
   .parse(process.argv);
 const options = program.opts();
@@ -33,10 +45,12 @@ const options = program.opts();
  */
 function q_empty_pathname(pathname) {
   // needed because params get messed up in ava testing environment
-  return !(pathname &&
-           (typeof pathname === 'string' || pathname instanceof String) &&
-           pathname !== '' &&
-           pathname !== 'undefined');
+  return !(
+    pathname &&
+    (typeof pathname === 'string' || pathname instanceof String) &&
+    pathname !== '' &&
+    pathname !== 'undefined'
+  );
 }
 
 /**
@@ -46,7 +60,7 @@ function q_empty_pathname(pathname) {
  * @returns {Promise.<Object, Error>} Returns the parsed json object.
  */
 function load_json_file(json_pathname) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     // needs some better checks for testing to work correctly
     if (q_empty_pathname(json_pathname)) {
       return resolve('{}');
@@ -55,12 +69,13 @@ function load_json_file(json_pathname) {
       return reject(new Error(json_pathname + ' is not a json file'));
     }
     console.log('Reading:', json_pathname);
-    fs.readFile(json_pathname,
-                function(err, data) {
-                  if(err) return reject(err);
-                  return resolve(data);
-                });
-  }).then((data) => JSON.parse(data)).catch(console.error);
+    fs.readFile(json_pathname, function (err, data) {
+      if (err) return reject(err);
+      return resolve(data);
+    });
+  })
+    .then((data) => JSON.parse(data))
+    .catch(console.error);
 }
 
 var graph_style = load_json_file(options.style);
@@ -88,28 +103,43 @@ async function gen_graph(browser, trim, graph_pathname) {
   if (!q_empty_pathname(graph_pathname)) {
     const page = await browser.newPage();
     await page.setContent('<html><body><div id="graph"></div></body></html>');
-    await page.addStyleTag({content: `#graph { width: ${options.width}; height: ${options.height}; box-sizing: border-box; }`});
-    await page.addScriptTag({path: path.resolve(
-      __dirname, 'node_modules/cytoscape/dist/cytoscape.min.js')});
+    await page.addStyleTag({
+      content: `#graph { width: ${options.width}; height: ${options.height}; box-sizing: border-box; }`
+    });
+    await page.addScriptTag({
+      path: path.resolve(
+        __dirname,
+        'node_modules/cytoscape/dist/cytoscape.min.js'
+      )
+    });
     const cy_graph = Object.assign(
       {},
-      {'layout': {name: 'preset', 'fit': false, 'zoom': 1}},
-      await graph_style, await load_json_file(graph_pathname));
-    await page.addScriptTag({content: `var cy = cytoscape({
+      {layout: {name: 'preset', fit: false, zoom: 1}},
+      await graph_style,
+      await load_json_file(graph_pathname)
+    );
+    await page.addScriptTag({
+      content: `var cy = cytoscape({
 container: document.getElementById('graph'),
 elements: ${JSON.stringify(cy_graph.elements)},
 layout: ${JSON.stringify(cy_graph.layout)},
-style: ${JSON.stringify(cy_graph.style)}});`});
+style: ${JSON.stringify(cy_graph.style)}});`
+    });
 
     const image_pathname = make_image_pathname(graph_pathname);
     console.log(`Writing ${image_pathname}...`);
-    await page.screenshot({path: image_pathname, fullPage: true,
-                           omitBackground: true});
+    await page.screenshot({
+      path: image_pathname,
+      fullPage: true,
+      omitBackground: true
+    });
     if (trim) {
-      await new Promise(
-        (resolve,reject) =>
-          trimImage(image_pathname, image_pathname, {},
-                    err => { if (err) return reject(err); return resolve(); }));
+      await new Promise((resolve, reject) =>
+        trimImage(image_pathname, image_pathname, {}, (err) => {
+          if (err) return reject(err);
+          return resolve();
+        })
+      );
     }
   }
 }
@@ -126,9 +156,11 @@ async function gen_images(graph_files) {
   });
 
   // Run the conversion on all the images as promises.
-  await Promise.all(graph_files.map(g_file =>
-				    gen_graph(browser, options.trim, g_file)))
-    .catch(err => { console.error(err); });
+  await Promise.all(
+    graph_files.map((g_file) => gen_graph(browser, options.trim, g_file))
+  ).catch((err) => {
+    console.error(err);
+  });
   return browser.close();
 }
 
