@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const {Command} = require('commander');
+const { Command } = require('commander');
 const puppeteer = require('puppeteer');
 const trimImage = require('trim-image');
 const pkg = require('./package.json');
@@ -104,17 +104,17 @@ async function gen_graph(browser, trim, graph_pathname) {
     const page = await browser.newPage();
     await page.setContent('<html><body><div id="graph"></div></body></html>');
     await page.addStyleTag({
-      content: `#graph { width: ${options.width}; height: ${options.height}; box-sizing: border-box; }`
+      content: `#graph { width: ${options.width}; height: ${options.height}; box-sizing: border-box; }`,
     });
     await page.addScriptTag({
       path: path.resolve(
         __dirname,
         'node_modules/cytoscape/dist/cytoscape.min.js'
-      )
+      ),
     });
     const cy_graph = Object.assign(
       {},
-      {layout: {name: 'preset', fit: false, zoom: 1}},
+      { layout: { name: 'preset', fit: false, zoom: 1 } },
       await graph_style,
       await load_json_file(graph_pathname)
     );
@@ -123,7 +123,7 @@ async function gen_graph(browser, trim, graph_pathname) {
 container: document.getElementById('graph'),
 elements: ${JSON.stringify(cy_graph.elements)},
 layout: ${JSON.stringify(cy_graph.layout)},
-style: ${JSON.stringify(cy_graph.style)}});`
+style: ${JSON.stringify(cy_graph.style)}});`,
     });
 
     const image_pathname = make_image_pathname(graph_pathname);
@@ -131,7 +131,7 @@ style: ${JSON.stringify(cy_graph.style)}});`
     await page.screenshot({
       path: image_pathname,
       fullPage: true,
-      omitBackground: true
+      omitBackground: true,
     });
     if (trim) {
       await new Promise((resolve, reject) =>
@@ -152,7 +152,7 @@ async function gen_images(graph_files) {
   // create browser that is a bit bigger than the the desired image.
   const browser = await puppeteer.launch({
     headless: true,
-    defaultViewport: {width: options.width + 8, height: options.height + 8}
+    defaultViewport: { width: options.width + 8, height: options.height + 8 },
   });
 
   // Run the conversion on all the images as promises.
