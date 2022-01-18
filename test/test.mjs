@@ -15,6 +15,9 @@ test.after('Cleanup product', t => {
   }
 });
 
-test.cb('cytoscape2png', t => {
-  looksSame('test/Graph1.png', 'test/Graph1-result.png', t.end);
+test('cytoscape2png', t => {
+  return new Promise((resolve, reject) =>
+    looksSame('test/Graph1.png', 'test/Graph1-result.png', {ignoreAntialiasing: true, antialiasingTolerance: 3}, (error, {equal}) => {
+      error ? reject(error) : resolve(equal)
+    })).then(t.truthy)
 });
