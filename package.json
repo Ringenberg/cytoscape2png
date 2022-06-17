@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "ava",
-    "lint": "eslint index.js"
+    "lint": "eslint index.js",
+    "precommit": "npm test && npm run lint && prettier -c index.js"
   },
   "repository": {
     "type": "git",
@@ -29,17 +30,18 @@
   },
   "homepage": "https://github.com/Ringenberg/cytoscape2png#readme",
   "dependencies": {
-    "commander": "^9.1.0",
+    "commander": "^9.3.0",
     "cytoscape": "^3.21.1",
-    "puppeteer": "^13.5.2",
+    "puppeteer": "^14.4.1",
     "trim-image": "^1.0.3"
   },
   "devDependencies": {
-    "ava": "^4.2.0",
-    "eslint": "^8.13.0",
+    "ava": "^4.3.0",
+    "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "looks-same": "^7.3.0",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
     "tap-xunit": "^2.4.1"
   }
 }
