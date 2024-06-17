@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { Command } = require('commander');
 const puppeteer = require('puppeteer');
-const trimImage = require('trim-image');
+// const trimImage = require('trim-image');
 const pkg = require('./package.json');
 
 // Process command line parameters.
@@ -32,7 +32,7 @@ program
     (n) => parseInt(n),
     500
   )
-  .option('-T, --no-trim', 'Do not trim image')
+//  .option('-T, --no-trim', 'Do not trim image')
   .parse(process.argv);
 const options = program.opts();
 
@@ -99,7 +99,7 @@ function make_image_pathname(graph_pathname) {
  * Generate the graph image given the path to the json graph representation.
  * @param {String} the pathname of the graph json file.
  */
-async function gen_graph(browser, trim, graph_pathname) {
+async function gen_graph(browser, /*trim,*/ graph_pathname) {
   if (!q_empty_pathname(graph_pathname)) {
     const page = await browser.newPage();
     await page.setContent('<html><body><div id="graph"></div></body></html>');
@@ -133,14 +133,14 @@ style: ${JSON.stringify(cy_graph.style)}});`,
       fullPage: true,
       omitBackground: true,
     });
-    if (trim) {
-      await new Promise((resolve, reject) =>
-        trimImage(image_pathname, image_pathname, {}, (err) => {
-          if (err) return reject(err);
-          return resolve();
-        })
-      );
-    }
+//    if (trim) {
+//      await new Promise((resolve, reject) =>
+//        trimImage(image_pathname, image_pathname, {}, (err) => {
+//          if (err) return reject(err);
+//          return resolve();
+//        })
+//      );
+//    }
   }
 }
 
@@ -157,7 +157,7 @@ async function gen_images(graph_files) {
 
   // Run the conversion on all the images as promises.
   await Promise.all(
-    graph_files.map((g_file) => gen_graph(browser, options.trim, g_file))
+    graph_files.map((g_file) => gen_graph(browser, /*options.trim,*/ g_file))
   ).catch((err) => {
     console.error(err);
   });
