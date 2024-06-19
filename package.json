@@ -32,7 +32,7 @@
   "dependencies": {
     "commander": "^12.1.0",
     "cytoscape": "^3.29.2",
-    "puppeteer": "^22.11.1"
+    "puppeteer": "^22.11.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",
