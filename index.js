@@ -18,21 +18,21 @@ program
   .option(
     '-s, --style [value]',
     'A json file containing the Cytoscape style data to use for the images.',
-    ''
+    '',
   )
   .option(
     '-w, --width <n>',
     'Sets the initial viewport width.',
     (n) => parseInt(n),
-    500
+    500,
   )
   .option(
     '-h, --height <n>',
     'Sets the initial viewport height.',
     (n) => parseInt(n),
-    500
+    500,
   )
-//  .option('-T, --no-trim', 'Do not trim image')
+  //  .option('-T, --no-trim', 'Do not trim image')
   .parse(process.argv);
 const options = program.opts();
 
@@ -109,14 +109,14 @@ async function gen_graph(browser, /*trim,*/ graph_pathname) {
     await page.addScriptTag({
       path: path.resolve(
         __dirname,
-        'node_modules/cytoscape/dist/cytoscape.min.js'
+        'node_modules/cytoscape/dist/cytoscape.min.js',
       ),
     });
     const cy_graph = Object.assign(
       {},
       { layout: { name: 'preset', fit: false, zoom: 1 } },
       await graph_style,
-      await load_json_file(graph_pathname)
+      await load_json_file(graph_pathname),
     );
     await page.addScriptTag({
       content: `var cy = cytoscape({
@@ -133,14 +133,14 @@ style: ${JSON.stringify(cy_graph.style)}});`,
       fullPage: true,
       omitBackground: true,
     });
-//    if (trim) {
-//      await new Promise((resolve, reject) =>
-//        trimImage(image_pathname, image_pathname, {}, (err) => {
-//          if (err) return reject(err);
-//          return resolve();
-//        })
-//      );
-//    }
+    //    if (trim) {
+    //      await new Promise((resolve, reject) =>
+    //        trimImage(image_pathname, image_pathname, {}, (err) => {
+    //          if (err) return reject(err);
+    //          return resolve();
+    //        })
+    //      );
+    //    }
   }
 }
 
@@ -157,7 +157,7 @@ async function gen_images(graph_files) {
 
   // Run the conversion on all the images as promises.
   await Promise.all(
-    graph_files.map((g_file) => gen_graph(browser, /*options.trim,*/ g_file))
+    graph_files.map((g_file) => gen_graph(browser, /*options.trim,*/ g_file)),
   ).catch((err) => {
     console.error(err);
   });
