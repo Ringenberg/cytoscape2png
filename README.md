@@ -1,3 +1,13 @@
+# ⚠️ ARCHIVED / UNMAINTAINED
+
+This repository is **no longer actively maintained or supported**. 
+
+- **Status:** Archived
+- **Reason:** Project reached end-of-life.
+- **Usage:** You are free to browse the code, but no new features, bug fixes, or security patches will be applied. 
+
+*If you wish to continue developing this codebase, please feel free to **fork** it.*
+
 # cytoscape2png
 Command line tool for converting Cytograph json graph files to png images
 with an optional Cytograph style json file which is applied to all of the
