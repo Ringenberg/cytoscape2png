@@ -34,7 +34,7 @@
     "commander": "^15.0.0",
     "cytoscape": "^3.34.0",
     "puppeteer": "^25.16.0",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
